@@ -1,0 +1,205 @@
+diff --git a/src/osx_carbon_integration/Makefile_insert b/src/osx_carbon_integration/Makefile_insert
+new file mode 100755
+index 0000000..a5c98e0
+--- /dev/null
++++ b/src/osx_carbon_integration/Makefile_insert
+@@ -0,0 +1,9 @@
++# Makefile.am fragment sourced by src/Makefile.am.
++
++if WITH_CARBON_INTEGRATION
++
++ink_common_sources +=               \
++        osx_carbon_integration/osx-integration.cpp \
++	osx_carbon_integration/osx-glue.m
++endif
++
+diff --git a/src/osx_carbon_integration/osx-glue.h b/src/osx_carbon_integration/osx-glue.h
+new file mode 100755
+index 0000000..7394617
+--- /dev/null
++++ b/src/osx_carbon_integration/osx-glue.h
+@@ -0,0 +1,7 @@
++#ifndef OSX_GLUE_H
++#define OS_GLUE_H
++
++char *convert_mimetype(const char *mimetype);
++
++char *convert_uti(const char *mimetype);
++#endif /* OSX_GLUE_H */
+diff --git a/src/osx_carbon_integration/osx-glue.m b/src/osx_carbon_integration/osx-glue.m
+new file mode 100755
+index 0000000..a60c8a7
+--- /dev/null
++++ b/src/osx_carbon_integration/osx-glue.m
+@@ -0,0 +1,20 @@
++#include <Foundation/Foundation.h>
++#include <CoreServices/CoreServices.h>
++
++char *convert_mimetype(const char *mimetype) {
++	char *ret;
++	NSString *str = [[NSString alloc] initWithUTF8String:mimetype];
++        CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (CFStringRef)str, NULL);
++        ret =  [(NSString *)uti UTF8String];
++        [str release];
++        return ret;
++}
++
++
++char *convert_uti(const char *uti) {
++	char *ret = NULL;
++	NSString *str = (NSString *)UTTypeCopyPreferredTagWithClass((CFStringRef)[[NSString alloc] initWithUTF8String:uti], kUTTagClassMIMEType);
++	ret = [str UTF8String];
++	[str release];
++	return ret;
++}
+diff --git a/src/osx_carbon_integration/osx-integration.cpp b/src/osx_carbon_integration/osx-integration.cpp
+new file mode 100755
+index 0000000..6284942
+--- /dev/null
++++ b/src/osx_carbon_integration/osx-integration.cpp
+@@ -0,0 +1,96 @@
++/** @file
++ * @brief Integration with Mac OS X Desktop, Launcher and UI in general
++ */
++/* Authors:
++ *   Valerio Aimale <valerio@aimale.com>
++ *
++ * Copyright (C) 2013 authors
++ *
++ * Released under GNU GPL, read the file 'COPYING' for more information
++ */
++#ifdef __APPLE__
++
++#include <gtkmacintegration/gtkosxapplication.h>
++#include "osx-integration.h"
++
++#include <ui/interface.h>
++#include <file.h>
++
++#ifdef __cplusplus
++// extern "C" {
++#endif /* __cplusplus */
++
++static gboolean
++osx_quartz_quit (GtkosxApplication *app, gpointer data);
++static gboolean
++osx_quartz_block_termination (GtkosxApplication *app, gpointer data);
++
++InkscapeOsxIntegration sInkscapeOsxIntegration = {0};
++
++GtkWidget *osx_integration_menuitems[4];
++
++static gboolean
++osx_quartz_block_termination (GtkosxApplication *app, gpointer data)
++{
++	return !sp_ui_close_all();
++}
++
++
++static gboolean
++osx_quartz_quit (GtkosxApplication *app, gpointer data)
++{
++	sp_ui_close_all();
++	g_print("Got here");
++	gtk_main_quit();
++	return FALSE;
++}
++
++static gboolean
++osx_open_file (GtkosxApplication *app, gchar *path ,gpointer data)
++{
++	Glib::ustring ustr = Glib::ustring(path);
++	sp_file_open(ustr, NULL, true, false);
++	return true;
++}
++
++	
++void   init_Mac_OSX_Integration() {
++	sInkscapeOsxIntegration.pGtkOsxApplication  = (GtkosxApplication*) g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
++	//gtkosx_application_set_use_quartz_accelerators(sInkscapeOsxIntegration.pGtkOsxApplication, FALSE);
++}
++
++void   init_Mac_OSX_Integration_complete() {
++	gtkosx_application_ready(sInkscapeOsxIntegration.pGtkOsxApplication);
++	g_signal_connect(sInkscapeOsxIntegration.pGtkOsxApplication, "NSApplicationBlockTermination",
++	                 G_CALLBACK(osx_quartz_block_termination), NULL);
++	g_signal_connect(sInkscapeOsxIntegration.pGtkOsxApplication, "NSApplicationWillTerminate",
++	                 G_CALLBACK(osx_quartz_block_termination), NULL);
++	g_signal_connect(sInkscapeOsxIntegration.pGtkOsxApplication, "NSApplicationOpenFile",
++	                 G_CALLBACK(osx_open_file), NULL);
++	gtk_accel_map_save("/tmp/inkscape.map");
++}
++
++void OSX_set_menubar(SPDesktopWidget *dtw) {
++        gtkosx_application_set_menu_bar(sInkscapeOsxIntegration.pGtkOsxApplication, GTK_MENU_SHELL (dtw->menubar));
++
++        if (dtw->about_item) {
++            GtkWidget *sep = gtk_separator_menu_item_new();
++            gtkosx_application_insert_app_menu_item  (sInkscapeOsxIntegration.pGtkOsxApplication,
++                                                      dtw->about_item,
++                                                      0);
++            g_object_ref(sep);
++            gtkosx_application_insert_app_menu_item  (sInkscapeOsxIntegration.pGtkOsxApplication, sep, 1);
++        }
++        if (dtw->prefs_item) {
++            gtkosx_application_insert_app_menu_item  (sInkscapeOsxIntegration.pGtkOsxApplication,
++                                                      dtw->prefs_item,
++                                                      2);
++        }
++
++}
++
++#ifdef __cplusplus
++//}
++#endif /* __cplusplus */
++
++#endif /* __APPLE__ */
+diff --git a/src/osx_carbon_integration/osx-integration.h b/src/osx_carbon_integration/osx-integration.h
+new file mode 100755
+index 0000000..eef0387
+--- /dev/null
++++ b/src/osx_carbon_integration/osx-integration.h
+@@ -0,0 +1,43 @@
++#ifndef __OSX_INTEGRATION_H__
++#define __OSX_INTEGRATION_H__
++
++/*
++ * Main UI stuff
++ *
++ * Authors:
++ *   Valerio Aimale <valerio@aimale.com>
++ *
++ * Copyright (C) 2013 authors
++ *
++ * Released under GNU GPL, read the file 'COPYING' for more information
++ */
++
++#include <gtkmacintegration/gtkosxapplication.h>
++#include "widgets/desktop-widget.h"
++
++#ifdef __cplusplus
++extern "C" {
++#endif /* __cplusplus */
++
++typedef struct _InkscapeOsxIntegration {
++	GtkosxApplication *pGtkOsxApplication;
++	GtkWidget *menubar;
++	GtkWidget *about_item, *prefs_item;
++	SPDesktopWidget *dtw_infocus;
++	
++} InkscapeOsxIntegration;
++
++
++extern InkscapeOsxIntegration sInkscapeOsxIntegration;
++extern GtkWidget *osx_integration_menuitems[4];
++
++void OSX_set_menubar( SPDesktopWidget *menubar);
++void   init_Mac_OSX_Integration();
++void   init_Mac_OSX_Integration_complete();
++
++#ifdef __cplusplus
++}
++#endif /* __cplusplus */
++
++
++#endif /* __OSX_INTEGRATION_H__ */
