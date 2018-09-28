@@ -90,8 +90,8 @@ index ff55553..f0c6515
 +       enable_carbon=$enableval,enable_carbon=no)
 +with_carbon=no
 +if test "x$enable_carbon" = "xyes"; then
-+	PKG_CHECK_MODULES(GTKMACINTEGRATION, gtk-mac-integration-gtk2, gtk_mac_integration_gtk2_ok=yes, gtk_mac_integration_gtk2_ok=no)
-+	if test "x$gtk_mac_integration_gtk2_ok" = "xyes"; then
++	PKG_CHECK_MODULES(GTKMACINTEGRATION, gtk-mac-integration-gtk3, gtk_mac_integration_gtk3_ok=yes, gtk_mac_integration_gtk3_ok=no)
++	if test "x$gtk_mac_integration_gtk3_ok" = "xyes"; then
 +		AC_DEFINE(HAVE_GTKMACINTEGRATION, 1, [Use gtk-mac-integration])
 +		AC_SUBST(GTKMACINTEGRATION_LIBS)
 +		AC_SUBST(GTKMACINTEGRATION_CFLAGS)
