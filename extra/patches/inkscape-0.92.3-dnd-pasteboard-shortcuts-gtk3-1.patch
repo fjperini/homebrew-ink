@@ -1,5 +1,5 @@
 diff --git a/configure.ac b/configure.ac
-index ff55553..7b1f819 100644
+index ff55553..6ff414c 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -9,7 +9,7 @@ AC_PREREQ([2.64])
@@ -23,10 +23,11 @@ index ff55553..7b1f819 100644
  # Initialize libtool
  LT_PREREQ([2.2])
  LT_INIT
-@@ -542,6 +545,41 @@ AM_CONDITIONAL(WITH_LIBVISIO01, test "x$with_libvisio01" = "xyes")
- AM_CONDITIONAL(WITH_LIBVISIO00, test "x$with_libvisio00" = "xyes")
- AM_CONDITIONAL(WITH_LIBVISIO, test "x$with_libvisio" = "xyes")
- 
+@@ -859,6 +862,42 @@ else
+ 		CPPFLAGS="-DGDK_DISABLE_DEPRECATED $CPPFLAGS"
+ 	fi
+ fi
++
 +dnl ********************************
 +dnl Carbon Integration
 +dnl ********************************
@@ -62,10 +63,10 @@ index ff55553..7b1f819 100644
 +	fi
 +fi
 +
- dnl ********************************
- dnl Check for libcdr for extension
- dnl ********************************
-@@ -866,6 +904,8 @@ INKSCAPE_CXX_DEPS_CFLAGS="$GTKMM_CFLAGS $INKSCAPE_CXX_DEPS_CFLAGS"
+ AM_CONDITIONAL(WITH_GTKMM_3_0, test "x$with_gtkmm_3_0" = "xyes")
+ 
+ INKSCAPE_CFLAGS="$GTK_CFLAGS $INKSCAPE_CFLAGS"
+@@ -866,6 +905,8 @@ INKSCAPE_CXX_DEPS_CFLAGS="$GTKMM_CFLAGS $INKSCAPE_CXX_DEPS_CFLAGS"
  INKSCAPE_LIBS="$GTK_LIBS $INKSCAPE_LIBS"
  INKSCAPE_CXX_DEPS_LIBS="$GTKMM_LIBS $INKSCAPE_CXX_DEPS_LIBS"
  
