@@ -36,7 +36,7 @@ index e311562..21a91fa 100644
 -#include "ui/widget/spinbutton.h"
 -#include "ui/widget/frame.h"
 -#include <glibmm/i18n.h>
-+#include "object/sp-root.h"
++#include "sp-root.h"
 +
 
  #include <gdkmm/general.h>
