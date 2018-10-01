@@ -1,5 +1,5 @@
---- a/src/carbon_integration/osx-integration.h	(before formatting)
-+++ b/src/carbon_integration/osx-integration.h	(after formatting)
+--- a/src/carbon_integration/osx-integration.h
++++ b/src/carbon_integration/osx-integration.h
 @@ -15,28 +15,28 @@
   * Released under GNU GPL, read the file 'COPYING' for more information
   */
@@ -39,8 +39,8 @@
  #ifdef __cplusplus
  }
 
---- a/src/carbon_integration/osx-glue.m	(before formatting)
-+++ b/src/carbon_integration/osx-glue.m	(after formatting)
+--- a/src/carbon_integration/osx-glue.m
++++ b/src/carbon_integration/osx-glue.m
 @@ -1,20 +1,23 @@
 +#include <CoreServices/CoreServices.h>
  #include <Foundation/Foundation.h>
@@ -80,8 +80,8 @@
 +    return ret;
  }
 
---- a/src/carbon_integration/osx-integration.cpp	(before formatting)
-+++ b/src/carbon_integration/osx-integration.cpp	(after formatting)
+--- a/src/carbon_integration/osx-integration.cpp
++++ b/src/carbon_integration/osx-integration.cpp
 @@ -13,83 +13,73 @@
   */
  #ifdef __APPLE__
