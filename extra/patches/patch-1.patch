@@ -79,7 +79,7 @@
 +    [str release];
 +    return ret;
  }
- 
+
 --- a/src/carbon_integration/osx-integration.cpp	(before formatting)
 +++ b/src/carbon_integration/osx-integration.cpp	(after formatting)
 @@ -13,83 +13,73 @@
